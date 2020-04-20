@@ -47,18 +47,20 @@ def get_args():
     parser.add_argument('--alpha', type=float, default=0.25)
     parser.add_argument('--gamma', type=float, default=1.5)
     parser.add_argument('--num_epochs', type=int, default=500)
-    parser.add_argument('--val_interval', type=int, default=1, help='Number of epoches between valing phases')
+    parser.add_argument('--val_interval', type=int, default=1, help='Number of epochs between valing phases')
     parser.add_argument('--save_interval', type=int, default=500, help='Number of steps between saving')
     parser.add_argument('--es_min_delta', type=float, default=0.0,
                         help='Early stopping\'s parameter: minimum change loss to qualify as an improvement')
     parser.add_argument('--es_patience', type=int, default=0,
-                        help='Early stopping\'s parameter: number of epochs with no improvement after which training will be stopped. Set to 0 to disable this technique.')
+                        help='Early stopping\'s parameter: number of epochs with no improvement after which training '
+                             'will be stopped. Set to 0 to disable this technique.')
     parser.add_argument('--data_path', type=str, default='datasets/', help='the root folder of dataset')
     parser.add_argument('--log_path', type=str, default='logs/')
     parser.add_argument('--load_weights', type=str, default=None,
-                        help='whether to load weights from a checkpoint, set None to initialize, set \'last\' to load last checkpoint')
+                        help='whether to load weights from a checkpoint, set None to initialize, set \'last\' to load '
+                             'last checkpoint')
     parser.add_argument('--saved_path', type=str, default='logs/')
-    parser.add_argument('--debug', type=bool, default=False, help='whether visualize the predicted boxes of trainging, '
+    parser.add_argument('--debug', type=bool, default=False, help='whether visualize the predicted boxes of training, '
                                                                   'the output images will be in test/')
 
     args = parser.parse_args()
@@ -241,7 +243,9 @@ def train(opt):
                     progress_bar.set_description(
                         'Step: {}. Epoch: {}/{}. Iteration: {}/{}. Cls loss: {:.5f}. Reg loss: {:.5f}. Total loss: {:.5f}'.format(
                             step, epoch, opt.num_epochs, iter + 1, num_iter_per_epoch, cls_loss.item(),
-                            reg_loss.item(), loss.item()))
+                            reg_loss.item(), loss.item()
+                        )
+                    )
                     writer.add_scalars('Loss', {'train': loss}, step)
                     writer.add_scalars('Regression_loss', {'train': reg_loss}, step)
                     writer.add_scalars('Classfication_loss', {'train': cls_loss}, step)
@@ -304,7 +308,7 @@ def train(opt):
                     save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth')
 
                 model.train()
-                           
+
                 # Early stopping
                 if epoch - best_epoch > opt.es_patience > 0:
                     print('[Info] Stop training at epoch {}. The lowest loss achieved is {}'.format(epoch, loss))
