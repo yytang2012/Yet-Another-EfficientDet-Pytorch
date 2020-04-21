@@ -33,6 +33,7 @@ ap.add_argument('--cuda', type=bool, default=True)
 ap.add_argument('--device', type=int, default=0)
 ap.add_argument('--float16', type=bool, default=False)
 ap.add_argument('--override', type=bool, default=True, help='override previous bbox results file if exists')
+ap.add_argument('--data_path', type=str, default='datasets/', help='the root folder of dataset')
 args = ap.parse_args()
 
 compound_coef = args.compound_coef
@@ -41,6 +42,7 @@ use_cuda = args.cuda
 gpu = args.device
 use_float16 = args.float16
 override_prev_results = args.override
+dataset_dir = os.path.expanduser(args.data_path)
 project_name = args.project
 weights_path = f'weights/efficientdet-d{compound_coef}.pth' if args.weights is None else args.weights
 
@@ -61,7 +63,7 @@ def evaluate_coco(img_path, set_name, image_ids, coco, model, threshold=0.05):
 
     for image_id in tqdm(image_ids):
         image_info = coco.loadImgs(image_id)[0]
-        image_path = img_path + image_info['file_name']
+        image_path = os.path.join(img_path, image_info['file_name'])
 
         ori_imgs, framed_imgs, framed_metas = preprocess(image_path, max_size=input_sizes[compound_coef])
         x = torch.from_numpy(framed_imgs[0])
@@ -144,8 +146,10 @@ def _eval(coco_gt, image_ids, pred_json_path):
 
 if __name__ == '__main__':
     SET_NAME = params['val_set']
-    VAL_GT = f'datasets/{params["project_name"]}/annotations/instances_{SET_NAME}.json'
-    VAL_IMGS = f'datasets/{params["project_name"]}/{SET_NAME}/'
+    VAL_GT = os.path.join(dataset_dir, params["project_name"], "annotations", "instances_{}.json".format(SET_NAME))
+    VAL_IMGS = os.path.join(dataset_dir, params["project_name"], "images", SET_NAME)
+    # VAL_GT = f'datasets/{params["project_name"]}/annotations/instances_{SET_NAME}.json'
+    # VAL_IMGS = f'datasets/{params["project_name"]}/{SET_NAME}/'
     MAX_IMAGES = 10000
     coco_gt = COCO(VAL_GT)
     image_ids = coco_gt.getImgIds()[:MAX_IMAGES]

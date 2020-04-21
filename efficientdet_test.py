@@ -18,13 +18,13 @@ from utils.utils import preprocess, invert_affine, postprocess
 compound_coef = 2
 force_input_size = None  # set None to use default size
 # img_path = 'test/img.png'
-img_path = 'test/item1.jpg'
+img_path = 'test/item2.jpg'
 
 # replace this part with your project's anchor config
 anchor_ratios = [(1.0, 1.0), (1.4, 0.7), (0.7, 1.4)]
 anchor_scales = [2 ** 0, 2 ** (1.0 / 3.0), 2 ** (2.0 / 3.0)]
 
-threshold = 0.2
+threshold = 0.01
 iou_threshold = 0.2
 
 use_cuda = True
@@ -59,7 +59,7 @@ x = x.to(torch.float32 if not use_float16 else torch.float16).permute(0, 3, 1, 2
 model = EfficientDetBackbone(compound_coef=compound_coef, num_classes=len(obj_list),
                              ratios=anchor_ratios, scales=anchor_scales)
 # model.load_state_dict(torch.load(f'weights/efficientdet-d{compound_coef}.pth'))
-model.load_state_dict(torch.load(f'weights/efficientdet-d2_9_3450.pth'))
+model.load_state_dict(torch.load(f'weights/efficientdet-d2_81_102000.pth'))
 model.requires_grad_(False)
 model.eval()
 
